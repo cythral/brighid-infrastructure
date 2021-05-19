@@ -1,0 +1,19 @@
+Description: Common Brighid Infrastructure
+Parameters:
+  EnableServiceStopping:
+    Type: String
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether or not to enable service stopping on the cluster
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: brighid
+      Tags:
+        - Key: ENABLE_SERVICE_STOPPING
+          Value: !Ref EnableServiceStopping
+
+  

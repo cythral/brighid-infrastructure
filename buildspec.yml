@@ -1,0 +1,23 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+  
+  pre_build:
+    commands:
+      - . ./scripts/codebuild-extras.sh
+
+  build:
+    commands:
+      - ./scripts/create-config-files.sh
+
+artifacts:
+  discard-paths: yes
+  files:
+    - "deploy/brighid-infrastructure.template.yml"
+    - "brighid-infrastructure.*.config.json"
