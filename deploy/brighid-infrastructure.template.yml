@@ -16,4 +16,27 @@ Resources:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
 
-  
+  RequestTopic:
+    Type: AWS::SNS::Topic
+
+  ResponseTopic:
+    Type: AWS::SNS::Topic
+
+Outputs:
+  ClusterName:
+    Value: !Ref Cluster
+    Description: Name of the ECS Cluster
+    Export:
+      Name: !Sub ${AWS::StackName}:ClusterName
+
+  RequestTopicArn:
+    Value: !Ref RequestTopic
+    Description: ARN of the Request / Command Topic
+    Export:
+      Name: !Sub ${AWS::StackName}:RequestTopicArn
+
+  ResponseTopic:
+    Value: !Ref ResponseTopic
+    Description: ARN of the Response Topic
+    Export:
+      Name: !Sub ${AWS::StackName}:ResponseTopicArn
