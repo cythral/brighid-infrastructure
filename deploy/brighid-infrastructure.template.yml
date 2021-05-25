@@ -26,13 +26,6 @@ Resources:
   ResponseTopic:
     Type: AWS::SNS::Topic
 
-  SharedTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      Topics:
-        - !Ref RequestTopic
-        - !Ref ResponseTopic
-
   ServiceRegistry:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
