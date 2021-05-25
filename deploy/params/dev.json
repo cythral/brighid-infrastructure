@@ -1,3 +1,4 @@
 {
-  "EnableServiceStopping": "true"
+  "EnableServiceStopping": "true",
+  "BaseDomainName": "dev.brigh.id"
 }

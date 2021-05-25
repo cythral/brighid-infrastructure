@@ -7,6 +7,10 @@ Parameters:
       - "false"
     Description: Whether or not to enable service stopping on the cluster
 
+  BaseDomainName:
+    Type: String
+    Description: Base Domain Name to use for Brighid Services.
+
 Resources:
   Cluster:
     Type: AWS::ECS::Cluster
@@ -21,6 +25,20 @@ Resources:
 
   ResponseTopic:
     Type: AWS::SNS::Topic
+
+  SharedTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref RequestTopic
+        - !Ref ResponseTopic
+
+  ServiceRegistry:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+      Name: !Ref BaseDomainName
+      Description: Internal DNS Namespace for Brighid Services.
+      Vpc: !ImportValue cfn-utilities:VpcId
 
 Outputs:
   ClusterName:
@@ -40,3 +58,9 @@ Outputs:
     Description: ARN of the Response Topic
     Export:
       Name: !Sub ${AWS::StackName}:ResponseTopicArn
+
+  ServiceRegistry:
+    Value: !Ref ServiceRegistry
+    Description: Namespace ID of the Service Registry
+    Export:
+      Name: !Sub ${AWS::StackName}:ServiceRegistry
