@@ -36,7 +36,7 @@ Resources:
   SigningKey1:
     Type: AWS::KMS::Key
     Properties:
-      KeySpec: RSA_4096
+      KeySpec: RSA_2048
       KeyUsage: SIGN_VERIFY
       KeyPolicy:
         Version: 2012-10-17
