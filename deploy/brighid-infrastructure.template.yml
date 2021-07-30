@@ -33,27 +33,6 @@ Resources:
       Description: Internal DNS Namespace for Brighid Services.
       Vpc: !ImportValue cfn-utilities:VpcId
 
-  SigningKey1:
-    Type: AWS::KMS::Key
-    Properties:
-      KeySpec: RSA_2048
-      KeyUsage: SIGN_VERIFY
-      KeyPolicy:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: kms:*
-            Resource: "*"
-            Principal:
-              AWS: 
-                - !Sub arn:aws:iam::${AWS::AccountId}:root
-
-  SigningKey1Alias:
-    Type: AWS::KMS::Alias
-    Properties:
-      TargetKeyId: !GetAtt SigningKey1.Arn
-      AliasName: alias/Brighid/SigningKey1
-
 Outputs:
   ClusterName:
     Value: !Ref Cluster
