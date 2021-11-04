@@ -37,6 +37,7 @@ Resources:
     Type: Custom::Secret
     Properties:
       ServiceToken: !ImportValue cfn-secret-resource:SecretLambdaArn
+      KeyId: alias/SecretsKey
       Plaintext: test
 
 Outputs:
