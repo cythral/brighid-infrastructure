@@ -36,9 +36,7 @@ Resources:
   TestSecret:
     Type: Custom::Secret
     Properties:
-      ServiceToken: !Sub
-        - arn:aws:lambda:${AWS::Region}:${MasterAccountId}:function:Secret
-        - MasterAccountId: !ImportValue cfn-utilities:MasterAccountId
+      ServiceToken: !ImportValue cfn-secret-resource:SecretLambdaArn
       Plaintext: test
 
 Outputs:
