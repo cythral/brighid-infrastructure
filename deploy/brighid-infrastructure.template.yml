@@ -33,6 +33,14 @@ Resources:
       Description: Internal DNS Namespace for Brighid Services.
       Vpc: !ImportValue cfn-utilities:VpcId
 
+  TestSecret:
+    Type: Custom::Secret
+    Properties:
+      ServiceToken: !Sub
+        - arn:aws:lambda:${AWS::Region}:${MasterAccountId}:function:Secret
+        - MasterAccountId: !ImportValue cfn-utilities:MasterAccountId
+      Plaintext: test
+
 Outputs:
   ClusterName:
     Value: !Ref Cluster
@@ -63,3 +71,9 @@ Outputs:
     Description: Name of the Service Registry
     Export:
       Name: !Sub ${AWS::StackName}:ServiceRegistryName
+
+  TestSecret:
+    Value: !GetAtt TestSecret.Arn
+    Description: ARN of the test secret
+    Export:
+      Name: !Sub ${AWS::StackName}:TestSecret
