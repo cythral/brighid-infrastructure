@@ -22,7 +22,7 @@ AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.SecretAccessKey')
 AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.Token')
 
 renovate \
-    --hostRules="[{\"hostType\":\"docker\",\"username\":\"$AWS_ACCESS_KEY_ID\",\"password\":\"$AWS_SECRET_ACCESS_KEY\",\"token\":\"$AWS_SESSION_TOKEN\"}]" \
+    --host-rules="[{\"hostType\":\"docker\",\"username\":\"$AWS_ACCESS_KEY_ID\",\"password\":\"$AWS_SECRET_ACCESS_KEY\",\"token\":\"$AWS_SESSION_TOKEN\"}]" \
     --binary-source docker \
     --docker-user root \
     --autodiscover \
