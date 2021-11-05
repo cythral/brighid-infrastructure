@@ -16,6 +16,7 @@ ENCRYPTED_GITHUB_TOKEN=$1
 export RENOVATE_TOKEN=$(decrypt $ENCRYPTED_GITHUB_TOKEN)
 export LOG_LEVEL=debug
 
+AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
 echo $AWS_ACCESS_KEY_ID
 
 renovate \
