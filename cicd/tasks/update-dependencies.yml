@@ -7,7 +7,7 @@ phases:
   install:
     runtime-versions:
       docker: 19
-      nodejs: 14
+      nodejs: 12
 
     commands:
       - npm install --global @cythral/renovate
