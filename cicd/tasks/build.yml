@@ -10,14 +10,14 @@ phases:
   
   pre_build:
     commands:
-      - . ./scripts/codebuild-extras.sh
+      - . ./cicd/scripts/codebuild-extras.sh
 
   build:
     commands:
-      - ./scripts/create-config-files.sh
+      - ./cicd/scripts/create-config-files.sh
 
 artifacts:
   discard-paths: yes
   files:
-    - "deploy/brighid-infrastructure.template.yml"
+    - "cicd/brighid-infrastructure.template.yml"
     - "brighid-infrastructure.*.config.json"

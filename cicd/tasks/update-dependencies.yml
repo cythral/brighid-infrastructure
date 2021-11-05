@@ -1,0 +1,17 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+      nodejs: 14
+
+    commands:
+      - npm install --global @cythral/renovate
+
+  build:
+    commands:
+      - ./cicd/scripts/renovate.sh $ENCRYPTED_GITHUB_TOKEN 
