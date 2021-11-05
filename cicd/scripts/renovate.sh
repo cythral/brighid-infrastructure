@@ -16,9 +16,6 @@ ENCRYPTED_GITHUB_TOKEN=$1
 export RENOVATE_TOKEN=$(decrypt $ENCRYPTED_GITHUB_TOKEN)
 export LOG_LEVEL=debug
 
-CREDENTIALS_NAME=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials)
-CREDENTIALS=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials/$CREDENTIALS_NAME)
-
 echo $AWS_ACCESS_KEY_ID
 
 renovate \
