@@ -10,6 +10,7 @@ phases:
       nodejs: 12
 
     commands:
+      - npm --global config set user root
       - npm install --global @cythral/renovate
 
   build:
