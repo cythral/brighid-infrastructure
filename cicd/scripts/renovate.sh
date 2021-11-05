@@ -16,8 +16,10 @@ ENCRYPTED_GITHUB_TOKEN=$1
 export RENOVATE_TOKEN=$(decrypt $ENCRYPTED_GITHUB_TOKEN)
 export LOG_LEVEL=debug
 
-AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id)
-echo $AWS_ACCESS_KEY_ID
+CREDENTIALS=$(curl http://169.254.169.254$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
+AWS_ACCESS_KEY_ID=$(cat $CREDENTIALS | jq -r '.AccessKeyId')
+AWS_SECRET_ACCESS_KEY=$(cat $CREDENTIALS | jq -r '.SecretAccessKey')
+AWS_SESSION_TOKEN=$(cat $CREDENTIALS | jq -r '.Token')
 
 renovate \
     --hostRules="[{\"hostType\":\"docker\",\"username\":\"$AWS_ACCESS_KEY_ID\",\"password\":\"$AWS_SECRET_ACCESS_KEY\",\"token\":\"$AWS_SESSION_TOKEN\"}]" \
