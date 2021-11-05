@@ -18,12 +18,11 @@ export LOG_LEVEL=debug
 
 CREDENTIALS_NAME=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials)
 CREDENTIALS=$(curl http://169.254.169.254/latest/meta-data/iam/security-credentials/$CREDENTIALS_NAME)
-AWS_ACCESS_KEY_ID=$(cat $CREDENTIALS | jq -r '.AccessKeyId')
-AWS_SECRET_ACCESS_KEY=$(cat $CREDENTIALS | jq -r '.SecretAccessKey')
-AWS_SESSION_TOKEN=$(cat $CREDENTIALS | jq -r '.Token')
+
+echo $AWS_ACCESS_KEY_ID
 
 renovate \
-    --hostRules="[{\"hostType\":\"docker\",\"username\":\"$AWS_ACCESS_KEY_ID\",\"password\":\"$AWS_SECRET_ACCESS_KEY\",\"token\":\"$AWS_SESSION_TOKEN\"}]"
+    --hostRules="[{\"hostType\":\"docker\",\"username\":\"$AWS_ACCESS_KEY_ID\",\"password\":\"$AWS_SECRET_ACCESS_KEY\",\"token\":\"$AWS_SESSION_TOKEN\"}]" \
     --binary-source docker \
     --docker-user root \
     --autodiscover \
