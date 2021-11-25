@@ -54,25 +54,6 @@ Resources:
                 - !ImportValue cfn-metadata:DevAgentRoleArn
                 - !ImportValue cfn-metadata:ProdAgentRoleArn
 
-  DockerRepo:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryPolicyText:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - ecr:GetAuthorizationToken
-              - ecr:GetDownloadUrlForLayer
-              - ecr:BatchGetImage
-              - ecr:BatchCheckLayerAvailability
-              - ecr:ListImages
-            Principal:
-              AWS:
-                - !Ref AWS::AccountId
-                - !ImportValue cfn-metadata:DevAccountId
-                - !ImportValue cfn-metadata:ProdAccountId
-
   BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -87,8 +68,6 @@ Resources:
         EnvironmentVariables:
           - Name: ARTIFACT_STORE
             Value: !Ref ArtifactStore
-          - Name: REPOSITORY_URI
-            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${DockerRepo}
         Type: LINUX_CONTAINER
       Cache:
         Type: LOCAL
@@ -108,32 +87,6 @@ Resources:
         BuildStatusConfig:
           Context: AWS CodeBuild (brighid-infrastructure)
           TargetUrl: !Sub https://sso.brigh.id/start/shared?destination=https://console.aws.amazon.com/codesuite/codebuild/${AWS::AccountId}/projects/${AWS::StackName}-build/build/$CODEBUILD_BUILD_ID/?region=${AWS::Region}
-
-  UpdateDependenciesProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Name: !Sub ${AWS::StackName}-update-dependencies
-      BadgeEnabled: true
-      ServiceRole: !ImportValue cfn-utilities:BuilderRoleArn
-      EncryptionKey: !ImportValue cfn-utilities:ArtifactKeyArn
-      Environment:
-        PrivilegedMode: true
-        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
-        ComputeType: BUILD_GENERAL1_SMALL
-        EnvironmentVariables:
-          - Name: ENCRYPTED_GITHUB_TOKEN
-            Value: !GetAtt GithubTokenSecret.Ciphertext
-        Type: LINUX_CONTAINER
-      Cache:
-        Type: LOCAL
-        Modes:
-          - LOCAL_DOCKER_LAYER_CACHE
-      Artifacts:
-        Type: NO_ARTIFACTS
-      Source:
-        Type: GITHUB
-        Location: !Sub https://github.com/${GithubOwner}/${GithubRepo}.git
-        BuildSpec: cicd/tasks/update-dependencies.yml
 
   SupersessionQueue:
     Type: AWS::SQS::Queue
