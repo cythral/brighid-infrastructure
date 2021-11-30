@@ -80,6 +80,9 @@ Resources:
       DefinitionUri: ./pipeline.asl.yml
       DefinitionSubstitutions:
         BuildProject: !Ref BuildProject
+        S3DeploymentFunctionArn: !ImportValue cfn-core:S3DeploymentFunctionArn
+        DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
+        StaticAssetsSourceBucket: !Ref StaticAssetsSourceBucket
       Events:
         S3Event:
           Type: EventBridgeRule

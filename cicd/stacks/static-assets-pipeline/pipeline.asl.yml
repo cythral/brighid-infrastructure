@@ -3,12 +3,29 @@ States:
     Build:
         Type: Task
         Resource: arn:aws:states:::codebuild:startBuild.sync
-        Next: Success
+        ResultPath: $.BuildOutput
+        Next: Upload Dev Files
         Parameters:
             ProjectName: ${BuildProject}
             EnvironmentVariablesOverride:
                 - Name: ASSETS_SOURCE_KEY
                   Value.$: $.detail.requestParameters.key
+
+    Upload Dev Files:
+        Type: Task
+        Resource: ${S3DeploymentFunctionArn}
+        Next: Success
+        ResultPath: null
+        Parameters:
+            ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
+            DestinationBucket: ${StaticAssetsSourceBucket}
+            RoleArn: ${DevRoleArn}
+            EnvironmentName: dev
+            ProjectName: brighid-static-assets
+            CommitInfo:
+                GithubOwner: cythral
+                GithubRepo: brighid-infrastructure
+                GithubRef: master
 
     Success:
         Type: Succeed
