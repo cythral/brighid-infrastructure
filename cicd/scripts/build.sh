@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 cwd=$(dirname "${BASH_SOURCE[0]}")
 bin=$cwd/../../bin
 artifact_store=$1
