@@ -10,4 +10,10 @@ phases:
   
   build:
     commands:
-      - echo $ASSETS_SOURCE_KEY
+      - aws s3 cp s3://$ASSETS_SOURCE_BUCKET/$ASSETS_SOURCE_KEY $ASSETS_SOURCE_KEY
+      - aws s3 rm s3://$ASSETS_SOURCE_BUCKET/$ASSETS_SOURCE_KEY
+
+artifacts:
+  discard-paths: yes
+  files:
+    - "$ASSETS_SOURCE_KEY"
