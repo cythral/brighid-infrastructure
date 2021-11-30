@@ -92,6 +92,20 @@ Resources:
       Subscription:
         - Endpoint: talen.fisher@cythral.com
           Protocol: email-json
+
+  StaticAssetsUploadTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref StaticAssetsUploadTopic
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sns:Publish
+            Resource: "*"
+            Principal:
+              Service: events.amazonaws.com
   
   StaticAssetsUploadEvent:
     Type: AWS::Events::Rule
@@ -105,7 +119,6 @@ Resources:
         detail:
           eventSource: [s3.amazonaws.com]
           eventName: [PutObject,CompleteMultipartUpload]
-
 
   BuildProject:
     Type: AWS::CodeBuild::Project
