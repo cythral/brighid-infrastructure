@@ -25,7 +25,7 @@ States:
             CommitInfo:
                 GithubOwner: cythral
                 GithubRepo: brighid-infrastructure
-                GithubRef: master
+                GithubRef.$: $.BuildOutput.Build.ResolvedSourceVersion
 
     Success:
         Type: Succeed
