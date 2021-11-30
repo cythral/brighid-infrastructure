@@ -86,6 +86,27 @@ Resources:
               Values: 
                 - !Sub arn:aws:s3:::${StaticAssetsSourceBucket}/
 
+  StaticAssetsUploadTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: talen.fisher@cythral.com
+          Protocol: email-json
+  
+  StaticAssetsUploadEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      Targets:
+        - Id: SNS
+          Arn: !Ref StaticAssetsUploadTopic
+      EventPattern:
+        source: [aws.s3]
+        detail-type: [AWS API Call via CloudTrail]
+        detail:
+          eventSource: [s3.amazonaws.com]
+          eventName: [PutObject,CompleteMultipartUpload]
+
+
   BuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
