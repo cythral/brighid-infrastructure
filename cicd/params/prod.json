@@ -1,4 +1,5 @@
 {
     "EnableServiceStopping": "false",
-    "BaseDomainName": "brigh.id"
+    "BaseDomainName": "brigh.id",
+    "HostedZoneId": "Z1EDHGW4QJZDPG"
 }

@@ -11,6 +11,10 @@ Parameters:
     Type: String
     Description: Base Domain Name to use for Brighid Services.
 
+  HostedZoneId:
+    Type: String
+    Description: ID of the hosted zone to add DNS records to.
+
 Resources:
   Cluster:
     Type: AWS::ECS::Cluster
@@ -32,6 +36,81 @@ Resources:
       Name: !Ref BaseDomainName
       Description: Internal DNS Namespace for Brighid Services.
       Vpc: !ImportValue cfn-utilities:VpcId
+
+  StaticAssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods:
+              - GET
+              - HEAD
+            AllowedOrigins:
+              - !Sub "http://${BaseDomainName}"
+              - !Sub "http://*.${BaseDomainName}"
+
+  StaticAssetsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref StaticAssetsBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt StaticAssetsCloudfrontIdentity.S3CanonicalUserId
+            Action: s3:ListBucket
+            Resource: !Sub arn:aws:s3:::${StaticAssetsBucket}
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt StaticAssetsCloudfrontIdentity.S3CanonicalUserId
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${StaticAssetsBucket}/*
+
+  StaticAssetsCloudfrontIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Origin access identity for Brighid Static Assets
+
+  SSLCertificate:
+    Type: Custom::Certificate
+    Properties:
+      ServiceToken: !ImportValue cfn-certificate-resource:CertificateLambdaArn
+      DomainName: !Sub static.${BaseDomainName}
+      ValidationType: DNS
+      HostedZoneId: !Ref HostedZoneId
+      CreationRoleArn: !ImportValue cfn-certificate-resource:CreatorRoleArn
+
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Sub static.${BaseDomainName}
+        Comment: CloudFront distribution for Brighid Static Assets
+        Enabled: true
+        PriceClass: PriceClass_100
+        HttpVersion: http2
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SSLCertificate
+          SslSupportMethod: sni-only
+        DefaultCacheBehavior:
+          TargetOriginId: primary
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - HEAD
+            - OPTIONS
+            - GET
+          ForwardedValues:
+            QueryString: true
+        Origins:
+          - Id: primary
+            DomainName: !GetAtt StaticAssetsBucket.DomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${StaticAssetsCloudfrontIdentity}
 
 Outputs:
   ClusterName:
