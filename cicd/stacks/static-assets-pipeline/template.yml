@@ -32,9 +32,9 @@ Resources:
 
   StaticAssetsCloudTrail:
     Type: AWS::CloudTrail::Trail
-    DependsOn: TrailBucketPolicy
+    DependsOn: ArtifactBucketPolicy
     Properties:
-      S3BucketName: !Ref TrailBucket
+      S3BucketName: !Ref ArtifactBucket
       S3KeyPrefix: source-bucket-events
       IsLogging: true
       EventSelectors:
@@ -56,12 +56,14 @@ Resources:
         ComputeType: BUILD_GENERAL1_SMALL
         EnvironmentVariables:
           - Name: ARTIFACT_STORE
-            Value: !Ref ArtifactStore
+            Value: !Ref ArtifactBucket
         Type: LINUX_CONTAINER
       Cache:
         Type: LOCAL
         Modes:
           - LOCAL_DOCKER_LAYER_CACHE
+      Artifacts:
+        Type: NO_ARTIFACTS
       Source:
         Type: S3
         Location: !Sub ${StaticAssetsSourceBucket}
