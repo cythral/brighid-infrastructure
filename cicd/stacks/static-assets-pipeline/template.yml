@@ -47,7 +47,6 @@ Resources:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: brighid-static-assets-build
-      BadgeEnabled: true
       ServiceRole: !ImportValue cfn-utilities:BuilderRoleArn
       EncryptionKey: !ImportValue cfn-utilities:ArtifactKeyArn
       Environment:
