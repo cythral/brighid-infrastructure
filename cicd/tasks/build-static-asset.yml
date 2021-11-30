@@ -10,4 +10,4 @@ phases:
   
   build:
     commands:
-      - echo Hello World
+      - echo $ASSETS_SOURCE_KEY

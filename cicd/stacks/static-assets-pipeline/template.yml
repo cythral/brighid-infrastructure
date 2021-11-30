@@ -54,30 +54,23 @@ Resources:
         Image: aws/codebuild/standard:4.0
         ComputeType: BUILD_GENERAL1_SMALL
         EnvironmentVariables:
-          - Name: ARTIFACT_STORE
-            Value: !Ref ArtifactBucket
+          - Name: ASSETS_SOURCE_BUCKET
+            Value: !Ref StaticAssetsSourceBucket
         Type: LINUX_CONTAINER
       Cache:
         Type: LOCAL
         Modes:
           - LOCAL_DOCKER_LAYER_CACHE
       Artifacts:
-        Type: NO_ARTIFACTS
-      Source:
         Type: S3
-        Location: !Sub ${StaticAssetsSourceBucket}/
-        BuildSpec: |
-          version: 0.2
-          env:
-            shell: bash
-          phases:
-            install:
-              runtime-versions:
-                docker: 19
-            build:
-              commands:
-                - echo Hello World
-
+        Location: !Ref ArtifactBucket
+        Name: buildResults.zip
+        NamespaceType: BUILD_ID
+        Packaging: ZIP
+      Source:
+        Type: GITHUB
+        Location: https://github.com/cythral/brighid-infrastructure.git
+        BuildSpec: cicd/tasks/build-static-asset.yml
 
   StateMachine:
     Type: AWS::Serverless::StateMachine

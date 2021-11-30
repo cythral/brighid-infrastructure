@@ -6,6 +6,9 @@ States:
         Next: Success
         Parameters:
             ProjectName: ${BuildProject}
+            EnvironmentVariablesOverride:
+                - Name: ASSETS_SOURCE_KEY
+                  Value.$: $.detail.requestParameters.key
 
     Success:
         Type: Succeed
