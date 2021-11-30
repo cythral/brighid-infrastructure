@@ -1,0 +1,11 @@
+StartAt: Build
+States:
+    Build:
+        Type: Task
+        Resource: arn:aws:states:::codebuild:startBuild.sync
+        Next: Success
+        Parameters:
+            ProjectName: ${BuildProject}
+
+    Success:
+        Type: Succeed

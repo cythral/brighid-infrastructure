@@ -1,0 +1,97 @@
+Description: Resources for the Brighid Static Assets Pipeline
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+
+  ArtifactBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:GetBucketAcl
+              - s3:GetObject
+              - s3:ListBucket
+            Resource:
+              - !Sub arn:aws:s3:::${ArtifactBucket}
+              - !Sub arn:aws:s3:::${ArtifactBucket}/*
+            Principal:
+              Service: cloudtrail.amazonaws.com
+
+  StaticAssetsSourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+
+  StaticAssetsCloudTrail:
+    Type: AWS::CloudTrail::Trail
+    DependsOn: TrailBucketPolicy
+    Properties:
+      S3BucketName: !Ref TrailBucket
+      S3KeyPrefix: source-bucket-events
+      IsLogging: true
+      EventSelectors:
+        - DataResources:
+            - Type: AWS::S3::Object
+              Values: 
+                - !Sub arn:aws:s3:::${StaticAssetsSourceBucket}/
+
+  BuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: brighid-static-assets-build
+      BadgeEnabled: true
+      ServiceRole: !ImportValue cfn-utilities:BuilderRoleArn
+      EncryptionKey: !ImportValue cfn-utilities:ArtifactKeyArn
+      Environment:
+        PrivilegedMode: true
+        Image: aws/codebuild/standard:4.0
+        ComputeType: BUILD_GENERAL1_SMALL
+        EnvironmentVariables:
+          - Name: ARTIFACT_STORE
+            Value: !Ref ArtifactStore
+        Type: LINUX_CONTAINER
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_DOCKER_LAYER_CACHE
+      Source:
+        Type: S3
+        Location: !Sub ${StaticAssetsSourceBucket}
+        BuildSpec: |
+          version: 0.2
+          env:
+            shell: bash
+          phases:
+            install:
+              runtime-versions:
+                docker: 19
+            build:
+              commands:
+                - echo Hello World
+
+
+  StateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      RoleArn: !ImportValue cfn-utilities:MasterRoleArn
+      DefinitionUri: ./pipeline.asl.yml
+      DefinitionSubstitutions:
+        BuildProject: !Ref BuildProject
+      StateMachineName: brighid-static-assets-pipeline
+      Events:
+        - Type: EventBridgeRule
+          Properties:
+            Pattern:
+              source: [aws.s3]
+              detail-type: [AWS API Call via CloudTrail]
+              detail:
+                eventSource: [s3.amazonaws.com]
+                eventName: [PutObject,CompleteMultipartUpload]

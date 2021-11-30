@@ -1,0 +1,13 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  install:
+    runtime-versions:
+      docker: 19
+  
+  build:
+    commands:
+      - echo Hello World
