@@ -40,6 +40,7 @@ Resources:
   StaticAssetsBucket:
     Type: AWS::S3::Bucket
     Properties:
+      BucketName: !Sub static.${BaseDomainName}
       VersioningConfiguration:
         Status: Enabled
       CorsConfiguration:

@@ -18,7 +18,7 @@ States:
         ResultPath: null
         Parameters:
             ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
-            DestinationBucket: ${StaticAssetsSourceBucket}
+            DestinationBucket: static.dev.brigh.id
             RoleArn: ${DevRoleArn}
             EnvironmentName: dev
             ProjectName: brighid-static-assets
