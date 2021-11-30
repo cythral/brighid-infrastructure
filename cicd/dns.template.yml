@@ -1,0 +1,54 @@
+Description: DNS Records for Brighid Infrastructure.
+Parameters:
+  HostedZone:
+    Type: String
+    Description: Name of the hosted zone to add records at. 
+
+  DevDomainName:
+    Type: String
+    Description: The domain name to use for the development version of the static assets repository.
+
+  DevAliasTarget:
+    Type: String
+    Description: The alias target (cname value) to use for the development version of the static assets repository.
+
+  ProdDomainName:
+    Type: String
+    Description: The domain name to use for the production version of the static assets repository.
+
+  ProdAliasTarget:
+    Type: String
+    Description: The alias target (cname value) to use for the production version of the static assets repository.
+
+Resources:
+  DevRecords:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      RecordSets:
+        - Name: !Ref DevDomainName
+          Type: A
+          AliasTarget:
+            DNSName: !Ref DevAliasTarget
+            HostedZoneId: Z2FDTNDATAQYW2
+        - Name: !Ref DevDomainName
+          Type: AAAA
+          AliasTarget:
+            DNSName: !Ref DevAliasTarget
+            HostedZoneId: Z2FDTNDATAQYW2
+
+  ProdRecords:
+    Type: AWS::Route53::RecordSetGroup
+    Properties:
+      HostedZoneName: !Ref HostedZone
+      RecordSets:
+        - Name: !Ref ProdDomainName
+          Type: A
+          AliasTarget:
+            DNSName: !Ref ProdAliasTarget
+            HostedZoneId: Z2FDTNDATAQYW2
+        - Name: !Ref ProdDomainName
+          Type: AAAA
+          AliasTarget:
+            DNSName: !Ref ProdAliasTarget
+            HostedZoneId: Z2FDTNDATAQYW2

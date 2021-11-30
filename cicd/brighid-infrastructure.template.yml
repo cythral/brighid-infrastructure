@@ -142,3 +142,15 @@ Outputs:
     Description: Name of the Service Registry
     Export:
       Name: !Sub ${AWS::StackName}:ServiceRegistryName
+
+  StaticAssetsDomainName:
+    Value: !Sub static.${BaseDomainName}
+    Description: Domain name to put the static assets repository under.
+    Export:
+      Name: !Sub ${AWS::StackName}:StaticAssetsDomainName
+
+  StaticAssetsCloudfrontDomainName:
+    Value: !GetAtt CloudfrontDistribution.DomainName
+    Description: Domain name of the cloudfront distribution to CNAME.
+    Export:
+      Name: !Sub ${AWS::StackName}:StaticAssetsCloudfrontDomainName

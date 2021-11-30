@@ -20,4 +20,5 @@ artifacts:
   discard-paths: yes
   files:
     - "cicd/brighid-infrastructure.template.yml"
+    - "cicd/dns.template.yml"
     - "brighid-infrastructure.*.config.json"
