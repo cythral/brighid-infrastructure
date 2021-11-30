@@ -81,7 +81,7 @@ Resources:
   StateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
-      RoleArn: !ImportValue cfn-utilities:MasterRoleArn
+      Role: !ImportValue cfn-utilities:MasterRoleArn
       DefinitionUri: ./pipeline.asl.yml
       DefinitionSubstitutions:
         BuildProject: !Ref BuildProject
