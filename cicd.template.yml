@@ -44,19 +44,6 @@ Resources:
         Version: 2012-10-17
         Statement:
           - Effect: Allow
-            Action:
-              - s3:PutObject
-              - s3:PutObjectAcl
-              - s3:GetBucketAcl
-              - s3:GetObject
-              - s3:ListBucket
-            Resource:
-              - !Sub arn:aws:s3:::${ArtifactStore}
-              - !Sub arn:aws:s3:::${ArtifactStore}/*
-            Principal:
-              Service: cloudtrail.amazonaws.com
-
-          - Effect: Allow
             Action: s3:*Object
             Resource:
               - !Sub arn:aws:s3:::${ArtifactStore}
@@ -66,59 +53,6 @@ Resources:
                 - !Ref AWS::AccountId
                 - !ImportValue cfn-metadata:DevAgentRoleArn
                 - !ImportValue cfn-metadata:ProdAgentRoleArn
-
-  StaticAssetsSourceBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      VersioningConfiguration:
-        Status: Enabled
-
-  StaticAssetsCloudTrail:
-    Type: AWS::CloudTrail::Trail
-    DependsOn: ArtifactStorePolicy
-    Properties:
-      S3BucketName: !Ref ArtifactStore
-      S3KeyPrefix: source-bucket-events
-      IsLogging: true
-      EventSelectors:
-        - DataResources:
-            - Type: AWS::S3::Object
-              Values: 
-                - !Sub arn:aws:s3:::${StaticAssetsSourceBucket}/
-
-  StaticAssetsUploadTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      Subscription:
-        - Endpoint: talen.fisher@cythral.com
-          Protocol: email-json
-
-  StaticAssetsUploadTopicPolicy:
-    Type: AWS::SNS::TopicPolicy
-    Properties:
-      Topics:
-        - !Ref StaticAssetsUploadTopic
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action: sns:Publish
-            Resource: "*"
-            Principal:
-              Service: events.amazonaws.com
-  
-  StaticAssetsUploadEvent:
-    Type: AWS::Events::Rule
-    Properties:
-      Targets:
-        - Id: SNS
-          Arn: !Ref StaticAssetsUploadTopic
-      EventPattern:
-        source: [aws.s3]
-        detail-type: [AWS API Call via CloudTrail]
-        detail:
-          eventSource: [s3.amazonaws.com]
-          eventName: [PutObject,CompleteMultipartUpload]
 
   BuildProject:
     Type: AWS::CodeBuild::Project
