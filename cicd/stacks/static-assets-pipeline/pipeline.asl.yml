@@ -34,10 +34,11 @@ States:
         ResultPath: $.ApprovalDecision
         Parameters:
             FunctionName: ${ApprovalNotificationFunction}
-            Pipeline: brighid-static-assets-pipeline
-            ArtifactStore: ${ArtifactStore}
-            CustomMessage: brighid-static-assets requires manual approval for deployment to production
-            Token.$: $$.Task.Token
+            Payload:
+                Pipeline: brighid-static-assets-pipeline
+                ArtifactStore: ${ArtifactStore}
+                CustomMessage: brighid-static-assets requires manual approval for deployment to production
+                Token.$: $$.Task.Token
 
     Was Approved?:
         Type: Choice
