@@ -82,7 +82,10 @@ Resources:
         BuildProject: !Ref BuildProject
         S3DeploymentFunctionArn: !ImportValue cfn-core:S3DeploymentFunctionArn
         DevRoleArn: !ImportValue cfn-metadata:DevAgentRoleArn
+        ProdRoleArn: !ImportValue cfn-metadata:ProdAgentRoleArn
         StaticAssetsSourceBucket: !Ref StaticAssetsSourceBucket
+        ApprovalNotificationFunction: !ImportValue cfn-core:ApprovalNotificationFunctionArn
+        ArtifactStore: !Ref ArtifactBucket
       Events:
         S3Event:
           Type: EventBridgeRule

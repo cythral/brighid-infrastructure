@@ -4,23 +4,62 @@ States:
         Type: Task
         Resource: arn:aws:states:::codebuild:startBuild.sync
         ResultPath: $.BuildOutput
-        Next: Upload Dev Files
+        Next: Upload Dev File
         Parameters:
             ProjectName: ${BuildProject}
             EnvironmentVariablesOverride:
                 - Name: ASSETS_SOURCE_KEY
                   Value.$: $.detail.requestParameters.key
 
-    Upload Dev Files:
+    Upload Dev File:
         Type: Task
         Resource: ${S3DeploymentFunctionArn}
-        Next: Success
+        Next: Ask For Approval
         ResultPath: null
         Parameters:
             ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
             DestinationBucket: static.dev.brigh.id
             RoleArn: ${DevRoleArn}
             EnvironmentName: dev
+            ProjectName: brighid-static-assets
+            CommitInfo:
+                GithubOwner: cythral
+                GithubRepo: brighid-infrastructure
+                GithubRef.$: $.BuildOutput.Build.ResolvedSourceVersion
+
+    Ask For Approval:
+        Type: Task
+        Resource: arn:aws:states:::lambda:invoke.waitForTaskToken
+        Next: Was Approved?
+        ResultPath: $.ApprovalDecision
+        Parameters:
+            FunctionName: ${ApprovalNotificationFunction}
+            Pipeline: brighid-static-assets-pipeline
+            ArtifactStore: ${ArtifactStore}
+            CustomMessage: brighid-static-assets requires manual approval for deployment to production
+            Token.$: $$.Task.Token
+
+    Was Approved?:
+        Type: Choice
+        Choices:
+            - Variable: $.ApprovalDecision.Action
+              StringEquals: approve
+              Next: Upload Prod File
+            
+            - Variable: $.ApprovalDecision.Action
+              StringEquals: reject
+              Next: Success
+    
+    Upload Prod File:
+        Type: Task
+        Resource: ${S3DeploymentFunctionArn}
+        Next: Success
+        ResultPath: null
+        Parameters:
+            ZipLocation.$: $.BuildOutput.Build.Artifacts.Location
+            DestinationBucket: static.brigh.id
+            RoleArn: ${ProdRoleArn}
+            EnvironmentName: prod
             ProjectName: brighid-static-assets
             CommitInfo:
                 GithubOwner: cythral
