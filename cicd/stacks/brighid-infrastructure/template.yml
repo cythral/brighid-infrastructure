@@ -24,6 +24,52 @@ Resources:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
 
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+        - arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+        - !ImportValue cfn-utilities:SecretsKeyDecryptPolicyArn
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+
+  MigrationsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /brighid/migrations
+      RetentionInDays: 14
+
+  MigrationsTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: "256"
+      Memory: "512"
+      Family: brighid-migrations
+      NetworkMode: awsvpc
+      ExecutionRoleArn: !GetAtt TaskRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Name: migrations
+          Essential: true
+          Image: public.ecr.aws/cythral/brighid/base:latest
+          EntryPoint:
+            - migrate
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref MigrationsLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: brighid
+
   RequestTopic:
     Type: AWS::SNS::Topic
 
