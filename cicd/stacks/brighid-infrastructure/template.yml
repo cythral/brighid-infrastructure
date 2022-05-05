@@ -76,6 +76,9 @@ Resources:
   ResponseTopic:
     Type: AWS::SNS::Topic
 
+  CacheExpirationTopic:
+    Type: AWS::SNS::Topic
+
   ServiceRegistry:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
@@ -177,6 +180,12 @@ Outputs:
     Description: ARN of the Response Topic
     Export:
       Name: !Sub ${AWS::StackName}:ResponseTopicArn
+
+  CacheExpirationTopic:
+    Value: !Ref CacheExpirationTopic
+    Description: ARN of the Cache Expiration Topic
+    Export:
+      Name: !Sub ${AWS::StackName}:CacheExpirationTopic
 
   ServiceRegistry:
     Value: !Ref ServiceRegistry
