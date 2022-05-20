@@ -4,44 +4,11 @@ Resources:
   ArtifactBucket:
     Type: AWS::S3::Bucket
 
-  ArtifactBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref ArtifactBucket
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - s3:PutObject
-              - s3:PutObjectAcl
-              - s3:GetBucketAcl
-              - s3:GetObject
-              - s3:ListBucket
-            Resource:
-              - !Sub arn:aws:s3:::${ArtifactBucket}
-              - !Sub arn:aws:s3:::${ArtifactBucket}/*
-            Principal:
-              Service: cloudtrail.amazonaws.com
-
   StaticAssetsSourceBucket:
     Type: AWS::S3::Bucket
     Properties:
       VersioningConfiguration:
         Status: Enabled
-
-  StaticAssetsCloudTrail:
-    Type: AWS::CloudTrail::Trail
-    DependsOn: ArtifactBucketPolicy
-    Properties:
-      S3BucketName: !Ref ArtifactBucket
-      S3KeyPrefix: source-bucket-events
-      IsLogging: true
-      EventSelectors:
-        - DataResources:
-            - Type: AWS::S3::Object
-              Values: 
-                - !Sub arn:aws:s3:::${StaticAssetsSourceBucket}/
 
   BuildProject:
     Type: AWS::CodeBuild::Project
