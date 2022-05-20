@@ -7,6 +7,7 @@ Resources:
   StaticAssetsSourceBucket:
     Type: AWS::S3::Bucket
     Properties:
+      BucketName: brighid-static-assets-source
       VersioningConfiguration:
         Status: Enabled
 
