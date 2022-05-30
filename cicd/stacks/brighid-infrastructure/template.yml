@@ -27,6 +27,10 @@ Conditions:
     - !Ref UseFargateSpot
     - "true"
 
+  UseFargate: !Equals 
+    - !Ref UseFargateSpot
+    - "false"
+
 Resources:
   Cluster:
     Type: AWS::ECS::Cluster
@@ -35,6 +39,17 @@ Resources:
       Tags:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
+
+  FargateCapacityProviderAssociation:
+    Type: AWS::ECS::ClusterCapacityProviderAssociations
+    Condition: UseFargate
+    Properties:
+      Cluster: !Ref Cluster
+      CapacityProviders:
+        - FARGATE
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE
+          Weight: 1
 
   FargateSpotCapacityProviderAssociation:
     Type: AWS::ECS::ClusterCapacityProviderAssociations
