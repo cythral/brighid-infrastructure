@@ -7,6 +7,13 @@ Parameters:
       - "false"
     Description: Whether or not to enable service stopping on the cluster
 
+  UseFargateSpot:
+    Type: String
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether or not to use fargate spot for tasks launched in the cluster.
+
   BaseDomainName:
     Type: String
     Description: Base Domain Name to use for Brighid Services.
@@ -14,6 +21,11 @@ Parameters:
   HostedZoneId:
     Type: String
     Description: ID of the hosted zone to add DNS records to.
+
+Conditions:
+  UseFargateSpot: !Equals
+    - !Ref UseFargateSpot
+    - "true"
 
 Resources:
   Cluster:
@@ -23,6 +35,20 @@ Resources:
       Tags:
         - Key: ENABLE_SERVICE_STOPPING
           Value: !Ref EnableServiceStopping
+
+  FargateSpotCapacityProviderAssociation:
+    Type: AWS::ECS::ClusterCapacityProviderAssociations
+    Condition: UseFargateSpot
+    Properties:
+      Cluster: !Ref Cluster
+      CapacityProviders:
+        - FARGATE
+        - FARGATE_SPOT
+      DefaultCapacityProviderStrategy:
+        - CapacityProvider: FARGATE_SPOT
+          Weight: 1
+        - CapacityProvider: FARGATE
+          Weight: 0
 
   TaskRole:
     Type: AWS::IAM::Role

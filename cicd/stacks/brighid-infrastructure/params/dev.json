@@ -1,5 +1,6 @@
 {
   "EnableServiceStopping": "true",
+  "UseFargateSpot": "true",
   "BaseDomainName": "dev.brigh.id",
   "HostedZoneId": "Z1EDHGW4QJZDPG"
 }
