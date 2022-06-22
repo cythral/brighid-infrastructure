@@ -170,7 +170,7 @@ Resources:
     Type: AWS::Cognito::IdentityPool
     Properties:
       AllowUnauthenticatedIdentities: false
-      DeveloperProviderName: !Ref BaseDomainName
+      DeveloperProviderName: brighid
       IdentityPoolName: !Ref BaseDomainName
       SupportedLoginProviders:
         brighid: admin
