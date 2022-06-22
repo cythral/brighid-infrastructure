@@ -166,6 +166,13 @@ Resources:
       CloudFrontOriginAccessIdentityConfig:
         Comment: Origin access identity for Brighid Static Assets
 
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      AllowUnauthenticatedIdentities: false
+      DeveloperProviderName: !Ref BaseDomainName
+      IdentityPoolName: !Ref BaseDomainName
+
   SSLCertificate:
     Type: Custom::Certificate
     Properties:
