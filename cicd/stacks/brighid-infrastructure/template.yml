@@ -172,6 +172,8 @@ Resources:
       AllowUnauthenticatedIdentities: false
       DeveloperProviderName: !Ref BaseDomainName
       IdentityPoolName: !Ref BaseDomainName
+      SupportedLoginProviders:
+        brighid: admin
 
   SSLCertificate:
     Type: Custom::Certificate
