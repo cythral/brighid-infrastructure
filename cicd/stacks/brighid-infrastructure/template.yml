@@ -120,6 +120,13 @@ Resources:
   CacheExpirationTopic:
     Type: AWS::SNS::Topic
 
+  MonitoringTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Endpoint: monitoring-alerts@cythral.com
+          Protocol: email
+
   ServiceRegistry:
     Type: AWS::ServiceDiscovery::PrivateDnsNamespace
     Properties:
@@ -236,6 +243,12 @@ Outputs:
     Description: ARN of the Cache Expiration Topic
     Export:
       Name: !Sub ${AWS::StackName}:CacheExpirationTopic
+
+  MonitoringTopic:
+    Value: !Ref MonitoringTopic
+    Description: ARN of the Monitoring Topic
+    Export:
+      Name: !Sub ${AWS::StackName}:MonitoringTopic
 
   ServiceRegistry:
     Value: !Ref ServiceRegistry
